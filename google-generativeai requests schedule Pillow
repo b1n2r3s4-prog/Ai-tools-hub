@@ -1,0 +1,87 @@
+import time
+import requests
+import schedule
+import os
+import random
+import google.generativeai as genai
+
+# ===== ENV =====
+BOT_TOKEN = os.environ.get("8220633363:AAE310vCnnAiL7cbkDRwJP68CW1G0E7iCJI")
+CHANNEL_USERNAME = os.environ.get("https://t.me/AI_T00LS_HUB")
+GEMINI_API_KEY = os.environ.get("AIzaSyBOeYTGG3gu-f2NZR70ntfvs4ppV8iNODw")
+
+AFFILIATE_LINK = "https://t.me/Gugagagobot?start=_tgr_b8KECpg1ZDJk"
+
+# ===== GEMINI =====
+genai.configure(api_key=GEMINI_API_KEY)
+model = genai.GenerativeModel("gemini-pro")
+
+# ===== PROMPTS =====
+TOOL_PROMPT = """
+You are an AI Telegram growth expert.
+
+Create ONE post about a trending AI tool.
+Include:
+- Tool name (bold)
+- What it does (1 line)
+- Who should use it
+- 2 emojis
+- Call to action
+- 5 high-search hashtags
+Keep under 80 words.
+"""
+
+NEWS_PROMPT = """
+You are an AI tech journalist.
+
+Create ONE short breaking news post about AI or technology.
+Include:
+- News headline
+- 1–2 line explanation
+- Why it matters
+- 2 emojis
+- 5 trending tech hashtags
+Keep under 80 words.
+"""
+
+def generate_text(prompt):
+    return model.generate_content(prompt).text.strip()
+
+def generate_image(title):
+    url = f"https://image.pollinations.ai/prompt/{title}%20AI%20technology%20illustration"
+    return requests.get(url).content
+
+def post_to_telegram(text, image):
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
+    data = {
+        "chat_id": CHANNEL_USERNAME,
+        "caption": text,
+        "parse_mode": "HTML"
+    }
+    files = {"photo": image}
+    requests.post(url, data=data, files=files)
+
+def tool_post():
+    text = generate_text(TOOL_PROMPT)
+    title = text.split("\n")[0]
+    
+    # Auto monetize (every tool post)
+    text += f"\n\n👉 Try it here: {AFFILIATE_LINK}"
+    
+    image = generate_image(title)
+    post_to_telegram(text, image)
+
+def news_post():
+    text = generate_text(NEWS_PROMPT)
+    title = text.split("\n")[0]
+    image = generate_image(title)
+    post_to_telegram(text, image)
+
+# ===== SCHEDULE (PKT TIME via UTC) =====
+schedule.every().day.at("04:00").do(tool_post)  # 9 AM PKT
+schedule.every().day.at("10:00").do(news_post)  # 3 PM PKT
+schedule.every().day.at("16:00").do(tool_post)  # 9 PM PKT
+
+while True:
+    schedule.run_pending()
+    time.sleep(60)

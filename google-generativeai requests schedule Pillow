@@ -6,9 +6,9 @@ import random
 import google.generativeai as genai
 
 # ===== ENV =====
-BOT_TOKEN = os.environ.get("8220633363:AAE310vCnnAiL7cbkDRwJP68CW1G0E7iCJI")
+BOT_TOKEN = os.environ.get("8220633363:Token")
 CHANNEL_USERNAME = os.environ.get("https://t.me/AI_T00LS_HUB")
-GEMINI_API_KEY = os.environ.get("AIzaSyBOeYTGG3gu-f2NZR70ntfvs4ppV8iNODw")
+GEMINI_API_KEY = os.environ.get("api")
 
 AFFILIATE_LINK = "https://t.me/Gugagagobot?start=_tgr_b8KECpg1ZDJk"
 
